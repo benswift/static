@@ -45,6 +45,14 @@
   (let [name (FilenameUtils/getBaseName (str file))]
     (str (apply str (interleave (repeat \/) (.split name "-" 4))) "/")))
 
+(defn post-date
+  "Given a post file, return date with format."
+  [file format]
+  (->> file
+       (str)
+       (re-find #"\d*-\d*-\d*")
+       (parse-date "yyyy-MM-dd" format)))
+
 (defn site-url [f & [ext]]
   (-> (str f)
       (.replaceAll (dir-path :site) "")
@@ -356,7 +364,7 @@
           (FileUtils/copyFile 
            (File. (str (:out-dir (config)) 
                        "latest-posts/" max "/index.html")) 
-           (File. (str (:out-dir (config)) "index.html"))))))))
+           (File. (str (:out-dir (config)) "/latest-posts/index.html"))))))))
 
 (defn serve-static [req] 
   (let [mime-types {".clj" "text/plain"
