@@ -12,5 +12,6 @@
                  [watchtower "0.1.1"]
                  [stringtemplate-clj "0.1.0"]]
   :main static.core
+  :profiles {:uberjar {:aot :all}}
   :jar-name "static.jar"
   :uberjar-name "static-app.jar")
