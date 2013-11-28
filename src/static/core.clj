@@ -354,16 +354,22 @@
       (log-time-elapsed "Creating Sitemap " (create-sitemap))
       (log-time-elapsed "Creating Aliases " (create-aliases))
 
-      (when (:blog-as-index (config))
+      (when (:create-latest-posts (config))
         (log-time-elapsed "Creating Latest Posts " (create-latest-posts))
         (let [max (apply max (map read-string (-> (:out-dir (config))
                                                   (str  "latest-posts/")
                                                   (File.)
                                                   .list)))]
-          (FileUtils/copyFile 
+          (FileUtils/copyFile
            (File. (str (:out-dir (config)) 
                        "latest-posts/" max "/index.html")) 
-           (File. (str (:out-dir (config)) "/latest-posts/index.html"))))))))
+           (File. (str (:out-dir (config)) "/latest-posts/index.html")))
+
+          (if (:blog-as-index (config))
+            (FileUtils/copyFile
+             (File. (str (:out-dir (config))
+                         "latest-posts/" max "/index.html"))
+             (File. (str (:out-dir (config)) "/index.html")))))))))
 
 (defn serve-static [req] 
   (let [mime-types {".clj" "text/plain"
