@@ -7,8 +7,8 @@
                  [hiccup "1.0.4"]
                  [org.pegdown/pegdown "1.4.1"]
                  [org.clojars.amit/commons-io "1.4.0"]
-                 [ring/ring-core "1.2.0"]
-                 [ring/ring-jetty-adapter "1.2.0"]
+                 [ring/ring-core "1.2.1"]
+                 [ring/ring-jetty-adapter "1.2.1"]
                  [watchtower "0.1.1"]
                  [stringtemplate-clj "0.1.0"]]
   :main static.core
