@@ -48,8 +48,7 @@
 (defn post-date
   "Given a post file, return date with format."
   [file format]
-  (->> file
-       (str)
+  (->> (str file)
        (re-find #"\d*-\d*-\d*")
        (parse-date "yyyy-MM-dd" format)))
 
