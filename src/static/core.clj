@@ -110,9 +110,8 @@
     [:item 
      [:title (escape-html (:title metadata))]
      [:link  (str (URL. (URL. (:site-url (config))) (post-url file)))]
-     [:pubDate (parse-date "yyyy-MM-dd" "E, d MMM yyyy HH:mm:ss Z"
-                           (re-find #"\d*-\d*-\d*" 
-                                    (FilenameUtils/getBaseName (str file))))]
+     [:pubDate (post-date (FilenameUtils/getBaseName (str file))
+                           "E, d MMM yyyy HH:mm:ss Z")]
      [:description (escape-html @content)]]))
 
 (defn create-rss 
@@ -210,9 +209,8 @@
   (let [[metadata content] (read-doc f)]
     [:div [:h2 [:a {:href (post-url f)} (:title metadata)]]
      [:p {:class "publish_date"}  
-      (parse-date "yyyy-MM-dd" "dd MMM yyyy" 
-                  (re-find #"\d*-\d*-\d*" 
-                           (FilenameUtils/getBaseName (str f))))]
+      (post-date (FilenameUtils/getBaseName (str f)) 
+                  "dd MMM yyyy")]
      [:p @content]]))
 
 (defn create-latest-posts 
@@ -238,7 +236,7 @@
 ;; Create Archive Pages.
 ;;
 
-(defn post-count-by-mount 
+(defn post-count-by-month 
   "Create a map of month to post count {month => count}"
   []
   (->> (list-files :posts)
@@ -263,12 +261,12 @@
       (list [:h2 "Archives"]
             [:ul 
              (map 
-              (fn [[mount count]]
+              (fn [[month count]]
                 [:li [:a
-                      {:href (str "/archives/" (.replace mount "-" "/") "/")}
-                      (parse-date "yyyy-MM" "MMMM yyyy" mount)]
+                      {:href (str "/archives/" (.replace month "-" "/") "/")}
+                      (parse-date "yyyy-MM" "MMMM yyyy" month)]
                  (str " (" count ")")])
-              (post-count-by-mount))]))]))
+              (post-count-by-month))]))]))
   
   ;;create a page for each month.
   (dorun
@@ -283,7 +281,7 @@
          (template
           [{:title "Archives" :template (:default-template (config))}
            (html (map snippet posts))]))))
-    (keys (post-count-by-mount)))))
+    (keys (post-count-by-month)))))
 
 (defn create-aliases 
   "Create redirect pages."
