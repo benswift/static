@@ -148,6 +148,11 @@
 ;; Create Tags Page.
 ;;
 
+(defn get-tags
+  [m]
+  (if-let [tags (:tags m)]
+    (clojure.string/split tags #" ")))
+
 (defn tag-map 
   "Create a map of tags and posts contining them. {tag1 => [url1 url2..]}"
   []
@@ -155,7 +160,7 @@
    (fn[h v]
      (let [[metadata] (read-doc v)
            info [(post-url v) (:title metadata)]
-           tags (.split (:tags metadata) " ")]
+           tags (get-tags metadata)]
        (reduce 
         (fn[m p] 
           (let [[tag info] p] 
@@ -204,14 +209,24 @@
      :default (list older newer))))
 
 (defn snippet
-  "Render a post for display in index pages."
+  "Render a post for display in index pages.
+
+   This function has been customised to work witn a Semantic UI list"
   [f]
   (let [[metadata content] (read-doc f)]
-    [:div [:h2 [:a {:href (post-url f)} (:title metadata)]]
-     [:p {:class "publish_date"}  
+    [:div.item
+     (map
+      (fn [tag]
+        [:div.right.floated.tiny.purple.ui.button
+         [:a {:href (str "tags/index.html#" tag)} tag]])
+      (get-tags metadata))
+     [:div.content
+      [:h2.ui.header [:a {:href (post-url f)} (:title metadata)]]]
+     [:p
       (post-date (FilenameUtils/getBaseName (str f)) 
-                  "dd MMM yyyy")]
-     [:p @content]]))
+                 "dd MMM yyyy")]
+     [:p @content]
+     [:p "Disqus js stuff goes here."]]))
 
 (defn create-latest-posts 
   "Create and write latest post pages."
