@@ -178,15 +178,18 @@
                  (template
                   [{:title "Tags" :template (:default-template (config))}
                    (html
-                    [:h2 "Tags"]
-                    (map (fn[t]
-                           (let [[tag posts] t] 
-                             [:h4 [:a {:name tag} tag]
-                              [:ul
-                               (map #(let [[url title] %]
-                                       [:li [:a {:href url} title]]) 
-                                    posts)]]))
-                         (tag-map)))])))
+                    [:h2.ui.header "Posts by category"]
+                    [:div.ui.relaxed.divided.list
+                     (map (fn[t]
+                            (let [[tag posts] t] 
+                              [:div.item
+                               [:a.anchor {:name tag}]
+                               [:h3.ui.header tag]
+                               [:div.ui.animated.selection.list
+                                (map #(let [[url title] %]
+                                        [:div.item [:a {:href url} title]]) 
+                                     posts)]]))
+                          (tag-map))])])))
 
 ;;
 ;; Create pages for latest posts.
@@ -214,19 +217,17 @@
    This function has been customised to work witn a Semantic UI list"
   [f]
   (let [[metadata content] (read-doc f)]
-    [:div.item
+    [:div
      (map
       (fn [tag]
-        [:div.right.floated.tiny.purple.ui.button
-         [:a {:href (str "tags/index.html#" tag)} tag]])
+        [:a.ui.right.floated.label {:href (str "/tags/index.html#" tag)} tag])
       (get-tags metadata))
      [:div.content
       [:h2.ui.header [:a {:href (post-url f)} (:title metadata)]]]
-     [:p
-      (post-date (FilenameUtils/getBaseName (str f)) 
-                 "dd MMM yyyy")]
+     [:p (post-date (FilenameUtils/getBaseName (str f)) 
+                    "dd MMM yyyy")]
      [:p @content]
-     [:p "Disqus js stuff goes here."]]))
+     [:div.ui.section.divider]]))
 
 (defn create-latest-posts 
   "Create and write latest post pages."
